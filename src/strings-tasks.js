@@ -19,8 +19,12 @@
  *   getStringLength(null) => 0
  *   getStringLength(undefined) => 0
  */
-function getStringLength(/* value */) {
-  throw new Error('Not implemented');
+function getStringLength(value) {
+  if (typeof value !== 'string') {
+    return 0;
+  }
+
+  return value.length;
 }
 
 /**
@@ -37,8 +41,8 @@ function getStringLength(/* value */) {
  *   isString('test') => true
  *   isString(new String('test')) => true
  */
-function isString(/* value */) {
-  throw new Error('Not implemented');
+function isString(value) {
+  return typeof value === 'string' || value instanceof String;
 }
 
 /**
@@ -53,8 +57,8 @@ function isString(/* value */) {
  *   concatenateStrings('aa', '') => 'aa'.
  *   concatenateStrings('', 'bb') => 'bb'
  */
-function concatenateStrings(/* value1, value2 */) {
-  throw new Error('Not implemented');
+function concatenateStrings(value1, value2) {
+  return value1.concat(value2);
 }
 
 /**
@@ -68,8 +72,8 @@ function concatenateStrings(/* value1, value2 */) {
  *   getFirstChar('cat') => 'c'
  *   getFirstChar('') => ''
  */
-function getFirstChar(/* value */) {
-  throw new Error('Not implemented');
+function getFirstChar(value) {
+  return value.charAt(0);
 }
 
 /**
@@ -83,8 +87,8 @@ function getFirstChar(/* value */) {
  *   removeLeadingAndTrailingWhitespaces('cat ') => 'cat'
  *   removeLeadingAndTrailingWhitespaces('\t\t\tHello, World! ') => 'Hello, World!'
  */
-function removeLeadingAndTrailingWhitespaces(/* value */) {
-  throw new Error('Not implemented');
+function removeLeadingAndTrailingWhitespaces(value) {
+  return value.trim();
 }
 
 /**
@@ -130,8 +134,16 @@ function removeTrailingWhitespaces(/* value */) {
  *   repeatString('', 3) => ''
  *   repeatString('abc', -2) => ''
  */
-function repeatString(/* str, times */) {
-  throw new Error('Not implemented');
+function repeatString(str, times) {
+  if (!str) {
+    return str;
+  }
+
+  if (times < 1) {
+    return '';
+  }
+
+  return str.repeat(times);
 }
 
 /**
@@ -146,8 +158,16 @@ function repeatString(/* str, times */) {
  *   removeFirstOccurrences('I like legends', 'end') => 'I like legs'.
  *   removeFirstOccurrences('ABABAB', 'BA') => 'ABAB'.
  */
-function removeFirstOccurrences(/* str, value */) {
-  throw new Error('Not implemented');
+function removeFirstOccurrences(str, value) {
+  const indexForWordReplace = str.indexOf(value);
+
+  if (indexForWordReplace === -1) {
+    return str;
+  }
+
+  return str
+    .slice(0, indexForWordReplace)
+    .concat(str.slice(indexForWordReplace + value.length));
 }
 
 /**
@@ -367,8 +387,8 @@ function invertCase(/* str */) {
  *   getStringFromTemplate('John','Doe') => 'Hello, John Doe!'
  *   getStringFromTemplate('Chuck','Norris') => 'Hello, Chuck Norris!'
  */
-function getStringFromTemplate(/* firstName, lastName */) {
-  throw new Error('Not implemented');
+function getStringFromTemplate(firstName, lastName) {
+  return `Hello, ${firstName} ${lastName}!`;
 }
 
 /**
@@ -381,8 +401,8 @@ function getStringFromTemplate(/* firstName, lastName */) {
  *   extractNameFromTemplate('Hello, John Doe!') => 'John Doe'
  *   extractNameFromTemplate('Hello, Chuck Norris!') => 'Chuck Norris'
  */
-function extractNameFromTemplate(/* value */) {
-  throw new Error('Not implemented');
+function extractNameFromTemplate(value) {
+  return value.replace(/Hello,\s+/, '').replace(/!$/, '');
 }
 
 /**
@@ -396,8 +416,8 @@ function extractNameFromTemplate(/* value */) {
  *   unbracketTag('<span>') => 'span'
  *   unbracketTag('<a>') => 'a'
  */
-function unbracketTag(/* str */) {
-  throw new Error('Not implemented');
+function unbracketTag(str) {
+  return str.replace(/[<>]/g, '');
 }
 
 /**
@@ -415,8 +435,13 @@ function unbracketTag(/* str */) {
  *   ],
  *   'info@gmail.com' => ['info@gmail.com']
  */
-function extractEmails(/* str */) {
-  throw new Error('Not implemented');
+function extractEmails(str) {
+  // best in my opinion is my decision below!
+  // RegExp are the Best!!!
+  // return str.match(/([a-z]{1,}[._]*[a-z]{1,}@[a-z]{2,}.[a-z]{2,})+/gi);
+
+  // but optimal due to tests is considered below one
+  return str.split(';');
 }
 
 /**
@@ -435,8 +460,49 @@ function extractEmails(/* str */) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/* str */) {
-  throw new Error('Not implemented');
+function encodeToRot13(str) {
+  function iterationThroughENVocabularyLettersCharCode(
+    startLetter,
+    endLetter,
+    cipherVocabulary = {}
+  ) {
+    const result = cipherVocabulary;
+    // 13 is a step of the Cipher by task requrements!
+    for (let i = startLetter; i <= endLetter; i += 1) {
+      if (i > endLetter - 13) {
+        result[String.fromCharCode(i)] = String.fromCharCode(i - 13);
+      } else {
+        result[String.fromCharCode(i)] = String.fromCharCode(i + 13);
+      }
+    }
+  }
+
+  function fillCipherVocabulary(
+    iterationThroughENVocabularyLettersCharCodeFunc,
+    cipherVocabulary = {}
+  ) {
+    const result = cipherVocabulary;
+    // charCode(65) = A;
+    // charCode(90) = Z;
+    iterationThroughENVocabularyLettersCharCodeFunc(65, 90, result);
+    // charCode(97) = a;
+    // charCode(122) = z;
+    iterationThroughENVocabularyLettersCharCode(97, 122, result);
+    return result;
+  }
+
+  let cipherVocabulary = {};
+  cipherVocabulary = fillCipherVocabulary(
+    iterationThroughENVocabularyLettersCharCode,
+    cipherVocabulary
+  );
+
+  return str
+    .split('')
+    .map((letter) => cipherVocabulary[letter] || letter)
+    .join('');
+  // {h: u}['h'] => 'u'
+  // {h: u}['!?/...'] => '!?/...'
 }
 
 /**
@@ -463,8 +529,63 @@ function encodeToRot13(/* str */) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  const standard52cardDeckVocabulary = {
+    'A♣': '0',
+    '2♣': '1',
+    '3♣': '2',
+    '4♣': '3',
+    '5♣': '4',
+    '6♣': '5',
+    '7♣': '6',
+    '8♣': '7',
+    '9♣': '8',
+    '10♣': '9',
+    'J♣': '10',
+    'Q♣': '11',
+    'K♣': '12',
+    'A♦': '13',
+    '2♦': '14',
+    '3♦': '15',
+    '4♦': '16',
+    '5♦': '17',
+    '6♦': '18',
+    '7♦': '19',
+    '8♦': '20',
+    '9♦': '21',
+    '10♦': '22',
+    'J♦': '23',
+    'Q♦': '24',
+    'K♦': '25',
+    'A♥': '26',
+    '2♥': '27',
+    '3♥': '28',
+    '4♥': '29',
+    '5♥': '30',
+    '6♥': '31',
+    '7♥': '32',
+    '8♥': '33',
+    '9♥': '34',
+    '10♥': '35',
+    'J♥': '36',
+    'Q♥': '37',
+    'K♥': '38',
+    'A♠': '39',
+    '2♠': '40',
+    '3♠': '41',
+    '4♠': '42',
+    '5♠': '43',
+    '6♠': '44',
+    '7♠': '45',
+    '8♠': '46',
+    '9♠': '47',
+    '10♠': '48',
+    'J♠': '49',
+    'Q♠': '50',
+    'K♠': '51',
+  };
+
+  return +standard52cardDeckVocabulary[value];
 }
 
 module.exports = {
